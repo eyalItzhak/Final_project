@@ -1,0 +1,6 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+Yoga_output_train/**
+Yoga_output_test/**
+openpose/**

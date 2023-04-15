@@ -7,6 +7,7 @@ import pandas
 from sklearn import preprocessing
 TRAIN_INPUT = "..\Yoga_output_train"
 TEST_INPUT = "..\Yoga_output_test"
+MODEL_PATH = "./SavedModel/model"
 MAX_UNRECOGNIZED_KEY_POINTS = 10
 def get_position_data(folder_name):
     data = []
@@ -108,14 +109,7 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(num_classes, activation='softmax')
 ])
-# model = tf.keras.Sequential()
-# model.add(tf.keras.layers.Conv1D(filters=64, kernel_size=1, activation='relu', input_shape=(1,75)))
-# model.add(tf.keras.layers.Conv1D(filters=64, kernel_size=1, activation='relu'))
-# model.add(tf.keras.layers.Dropout(0.5))
-# model.add(tf.keras.layers.MaxPooling1D(pool_size=1))
-# model.add(tf.keras.layers.Flatten())
-# model.add(tf.keras.layers.Dense(100, activation='relu'))
-# model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
+
 # Compile the model
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
@@ -129,5 +123,11 @@ loss, accuracy = model.evaluate(test_df, test_labels_one_hot)
 
 print(f'Test loss: {loss:.3f}')
 print(f'Test accuracy: {accuracy:.3f}')
+
+
+
+# Save the weights
+print("Saving model to: " + MODEL_PATH)
+model.save(MODEL_PATH)
 
 
