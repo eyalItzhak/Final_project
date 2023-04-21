@@ -80,7 +80,9 @@ labels_int = np.array([label_to_int[label] for label in train_labels])
 labels_one_hot = np.zeros((len(train_labels), num_classes))
 labels_one_hot[np.arange(len(train_labels)), labels_int] = 1
 
-
+# Save label-to-index and index-to-label mappings to a file
+mappings = {'label_to_int': label_to_int, 'int_to_label': int_to_label}
+json.dump(mappings, open("mappings.json","w"))
 
 #####TEST#############
 test_df = pandas.DataFrame(test_input_data)
