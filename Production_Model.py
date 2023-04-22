@@ -8,6 +8,7 @@ from sklearn import preprocessing
 from tensorflow import keras
 import sys
 import time
+import subprocess
 MODEL_PATH = "./SavedModel/model"
 OPEN_POSE = "./openpose"
 INPUT = "Prediction_Input"
@@ -37,7 +38,7 @@ class PersonDataEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
     
 
-OpenPoseCommand = "start bin/OpenPoseDemo.exe --image_dir \"{input}\" --write_json \"{input}\""
+OpenPoseCommand = "start bin/OpenPoseDemo.exe --image_dir \"{input}\" --write_json \"{input}\" --render_pose 0"
 
 
 def run_openPose_on_image(filename):
@@ -49,7 +50,17 @@ def run_openPose_on_image(filename):
         output=os.path.join("../", INPUT)
     )
     print("###comannd ===>   " + cmd + "\n")
-    os.system(cmd)
+
+    # Run the OpenPose command and capture the output and exit status
+    process = subprocess.run(cmd, shell=True, capture_output=True)
+
+    # Check if the process was successful
+    if process.returncode == 0:
+        print("OpenPose process completed successfully.")
+    else:
+        print(f"OpenPose process failed with exit code {process.returncode}:")
+        print(process.stderr.decode('utf-8'))
+    #os.system(cmd)
     os.chdir('..')
 
 # normalize key point vector 
@@ -62,8 +73,8 @@ def nornamlize_vector(key_points):
 
 
 def normalize_json(folder):
-    while(len(os.listdir(folder))<2):
-        time.sleep(0.05)
+    # while(len(os.listdir(folder))<2):
+    #     time.sleep(0.05)
     files = os.scandir(folder)
     file = list(filter(lambda x : x.name.endswith(".json"),files))[0]
     file_data = json.load(open(file))
@@ -136,21 +147,21 @@ def clean_up_files(input_folder):
         file_path = os.path.join(input_folder, file_name)  # Get the full path to the file
         os.remove(file_path)  # Delete the file
 
-# if __name__ == '__main__':
-#     # check if the program was run with the correct number of arguments
-#     if len(sys.argv) != 2:
-#         print("Usage: python program_name.py input_string")
-#         sys.exit(1)
+if __name__ == '__main__':
+    # check if the program was run with the correct number of arguments
+    if len(sys.argv) != 2:
+        print("Usage: python program_name.py input_string")
+        sys.exit(1)
 
-#     image_path = sys.argv[1]
+    image_path = sys.argv[1]
 # Load label-to-index and index-to-label mappings from file
-with open('mappings.json', 'r') as f:
-    mappings = json.load(f)
-label_to_int = mappings['label_to_int']
-int_to_label = mappings['int_to_label']
-if(len(os.listdir(INPUT))>0):
-    people = preprocess_image("yoga.jpg")
-    use_model(MODEL_PATH,people,int_to_label)
-    save_predictions(people,OUTPUT)
-    clean_up_files(INPUT)
+    with open('mappings.json', 'r') as f:
+        mappings = json.load(f)
+    label_to_int = mappings['label_to_int']
+    int_to_label = mappings['int_to_label']
+    if(len(os.listdir(INPUT))>0):
+        people = preprocess_image(image_path)
+        use_model(MODEL_PATH,people,int_to_label)
+        save_predictions(people,OUTPUT)
+        clean_up_files(INPUT)
     
