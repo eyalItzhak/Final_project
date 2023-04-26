@@ -2,12 +2,9 @@ import tensorflow as tf
 import json
 import numpy as np
 import os
-import pathlib
-import pandas
 from sklearn import preprocessing
 from tensorflow import keras
 import sys
-import time
 import subprocess
 MODEL_PATH = "./SavedModel/model"
 OPEN_POSE = "./openpose"
@@ -38,7 +35,7 @@ class PersonDataEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
     
 
-OpenPoseCommand = "start bin/OpenPoseDemo.exe --image_dir \"{input}\" --write_json \"{input}\" --render_pose 0"
+OpenPoseCommand = "start bin/OpenPoseDemo.exe --image_dir \"{input}\" --write_json \"{input}\" --render_pose 0 --display 0"
 
 
 def run_openPose_on_image(filename):
